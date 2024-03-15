@@ -17,14 +17,9 @@ namespace ReflexeTestSlaby
 
         private void button1_Click(object sender, EventArgs e)
         {
-           
-               
                 Control clickedControl = sender as Control;
-
-               
-                
-                
-                this.Controls.Add(flowLayoutPanel2);
+            flowLayoutPanel2.Controls.Clear();
+            this.Controls.Add(flowLayoutPanel2);
 
                 
                 Type type = clickedControl.GetType();
@@ -58,8 +53,38 @@ namespace ReflexeTestSlaby
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            flowLayoutPanel2.Controls.Clear();
+            Control clickedControl = sender as Control;
+            this.Controls.Add(flowLayoutPanel2);
+
+
+            Type type = clickedControl.GetType();
+
+            MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            foreach (MethodInfo method in methods)
+            {
+                if (method.GetParameters().Length == 0)
+                {
+                    Button methodButton = new Button();
+                    methodButton.Text = method.Name;
+                    methodButton.Click += (s, args) =>
+                    {
+
+                        object result = method.Invoke(clickedControl, null);
+                        if (result != null)
+                        {
+                            MessageBox.Show("returnova hodnota: " + result.ToString());
+                        }
+                        else
+                        {
+                            MessageBox.Show("Metoda nevrátila žádnou hodnotu.");
+                        }
+                    };
+                    flowLayoutPanel2.Controls.Add(methodButton);
+                }
+            }
 
         }
-
     }
 }
